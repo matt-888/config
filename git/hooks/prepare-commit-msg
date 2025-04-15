@@ -1,0 +1,63 @@
+#!/bin/bash
+
+# if a local hook exists, run it
+if [[ -e ./.git/hooks/prepare-commit-msg ]]; then
+    ./.git/hooks/prepare-commit-msg "$@"
+fi
+
+if [[ -e ./.git/hooks/commit-msg ]]; then
+    ./.git/hooks/commit-msg "$@"
+fi
+
+COMMIT_MSG_FILE=$1
+COMMIT_SOURCE=$2
+SHA1=$3
+
+TEMP_FILE=$(mktemp)
+
+{
+    skip_count=0
+    first_content=true
+    while IFS= read -r line; do
+        # skip first three lines containing default commit message header
+        if [[ $skip_count -lt 3 && "$line" =~ ^#.*$ ]]; then
+            ((skip_count++))
+            continue
+        fi
+
+        # skip empty lines at top
+        if [[ $first_content == true && -z "$line" ]]; then
+            continue
+        fi
+
+        # check if in "Changes to be committed:" section
+        if [[ "$line" == *"Changes to be committed:"* ]]; then
+            first_content=false
+            echo "# Changes to be committed:" # keep original commented header
+            echo "" # add some blank lines
+            echo ""
+            echo ""
+            # process files
+            while IFS= read -r subline; do
+                if [[ "$subline" == "#"* && "$subline" =~ ":   " ]]; then
+                    cleaned_line=$(echo "$subline" | sed 's/^#[[:space:]]*//g' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+                    echo "$cleaned_line"
+                    echo "- "
+                    echo ""
+                elif [[ "$subline" == "#"* && "$subline" != *"Changes"* ]]; then
+                    continue
+                else
+                    # stop processing if in a different section
+                    echo "$subline"
+                    break
+                fi
+            done
+        elif [[ -n "$line" ]]; then
+            first_content=false
+            echo "$line"
+        fi
+    done < "$COMMIT_MSG_FILE"
+} > "$TEMP_FILE"
+
+# replace original file
+cat "$TEMP_FILE" > "$COMMIT_MSG_FILE" ; rm "$TEMP_FILE"
