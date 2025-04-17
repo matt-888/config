@@ -10,6 +10,8 @@ export ZPLUGDIR="${ZPLUGDIR:=$XDG_DATA_HOME/zsh/plugins}"
 export IPYTHONDIR="${IPYTHONDIR:=$XDG_CONFIG_HOME/ipython}"
 
 export TERM=xterm-256color
+export LANG=en_US.UTF-8
+export LC_CTYPE=en_US.UTF-8
 
 source "$HOME/.env"
 
