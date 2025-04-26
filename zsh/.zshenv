@@ -22,6 +22,7 @@ source "$HOME/.env"
 typeset -U path PATH
 
 path=("$HOME/.config/bin" $path[@])
+path=("$XDG_BIN_HOME" $path[@])
 
 path+=("$HOME/.local/bin")
 path+=("$HOME/.juliaup/bin")
