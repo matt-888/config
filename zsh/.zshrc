@@ -1,18 +1,11 @@
 # aliases ======================================================================
 
-alias vim='nvim'
+(( ${+aliases[vim]} )) || alias vim='nvim'
 alias ll='ls -l --color=auto'
 alias cchk='for i in {0..256}; do echo -en "\033[38;05;${i}m CLR \033[0m"; done'
 
 
 # prompt =======================================================================
-
-if [[ ! -d $ZPLUGDIR/pure ]]; then
-  git clone https://github.com/sindresorhus/pure $ZPLUGDIR/pure
-fi
-
-fpath+=($ZPLUGDIR/pure)
-autoload -U promptinit ; promptinit ; prompt pure
 
 # future enhancement
 # source ${ZDOTDIR}/prompt.zsh
@@ -20,11 +13,8 @@ autoload -U promptinit ; promptinit ; prompt pure
 
 # packages =====================================================================
 
-if [[ ! -d $ZPLUGDIR/zsh-syntax-highlighting ]]; then
-  git clone https://github.com/zsh-users/zsh-syntax-highlighting \
-  $ZPLUGDIR/zsh-syntax-highlighting
-fi
-source ${ZPLUGDIR}/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+local packages_file="${ZDOTDIR}/packages.zsh"
+[[ -f "$packages_file" ]] && source "$packages_file"
 
 
 # misc =========================================================================
