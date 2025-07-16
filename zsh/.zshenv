@@ -14,7 +14,9 @@ export TERM=xterm-256color
 export LANG=en_US.UTF-8
 export LC_CTYPE=en_US.UTF-8
 
-source "$HOME/.env"
+if [[ -f "$HOME/.env" ]]; then
+  source "$HOME/.env"
+fi
 
 
 # path =========================================================================
